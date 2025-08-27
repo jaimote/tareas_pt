@@ -1,16 +1,27 @@
-# docker/php/Dockerfile
+FROM php:8.3-fpm
 
-# Usamos la imagen oficial de PHP 8.3 con FPM, que es el motor de ejecución
-FROM php:8.3-fpm-alpine
+RUN apt-get update && apt-get install -y \
+    git \
+    unzip \
+    libzip-dev \
+    libonig-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libwebp-dev \
+    libxml2-dev \
+    libicu-dev \
+    libpq-dev \
+    libcurl4-openssl-dev \
+    libonig-dev \
+    cron \
+    procps \
+    vim \
+    mariadb-client \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN docker-php-ext-install pdo_mysql opcache gd exif intl zip mysqli
+
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 
 WORKDIR /var/www/html
-
-# Instalamos extensiones necesarias para CodeIgniter y PHPUnit
-# (xdebug es útil para obtener reportes de cobertura de código en las pruebas)
-RUN apk add --no-cache $PHPIZE_DEPS icu-dev \
-    && pecl install xdebug \
-    && docker-php-ext-enable xdebug \
-    && docker-php-ext-install pdo pdo_mysql mysqli intl
-
-# Instalamos Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
