@@ -16,3 +16,12 @@ application/logs/*
 !application/logs/index.html
 !application/logs/.htaccess
 /vendor/
+
+# Carpetas de escritura de CodeIgniter
+/writable
+/build
+
+# Archivos de IDEs y sistemas operativos
+.idea/
+.vscode/
+.DS_Store
