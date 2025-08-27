@@ -1,27 +1,14 @@
 FROM php:8.3-fpm
 
+# Instalar dependencias de sistema y extensiones de PHP
 RUN apt-get update && apt-get install -y \
     git \
-    unzip \
     libzip-dev \
-    libonig-dev \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libwebp-dev \
-    libxml2-dev \
-    libicu-dev \
-    libpq-dev \
-    libcurl4-openssl-dev \
-    libonig-dev \
-    cron \
-    procps \
-    vim \
-    mariadb-client \
-    && rm -rf /var/lib/apt/lists/*
+    unzip \
+    && docker-php-ext-install pdo_mysql mysqli zip
 
-RUN docker-php-ext-install pdo_mysql opcache gd exif intl zip mysqli
+# Configurar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
-
+# Directorio de trabajo
 WORKDIR /var/www/html

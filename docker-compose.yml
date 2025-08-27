@@ -1,32 +1,42 @@
 version: '3.8'
-
 services:
-  nginx:
+  app:
     build:
-      context: ./docker/nginx
+      context: .
+      dockerfile: Dockerfile
+    container_name: tareas_pt-app
+    volumes:
+      - .src:/var/www/html
     ports:
       - "8080:80"
-    volumes:
-      - ./app:/var/www/html
     depends_on:
-      - php-fpm
-
-  php-fpm:
-    build:
-      context: ./docker/php
-    volumes:
-      - ./app:/var/www/html
-
-  mariadb:
-    build:
-      context: ./docker/mariadb
+      - db
+      - composer
+  db:
+    image: mariadb:latest
+    container_name: tareas_pt-db
+    restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: root_password
-      MARIADB_DATABASE: ci4_db
-      MARIADB_USER: ci4_user
-      MARIADB_PASSWORD: ci4_password
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: tareas_pt
     volumes:
-      - mariadb_data:/var/lib/mysql
+      - db_data:/var/lib/mysql
+  composer:
+    image: composer:latest
+    container_name: tareas_pt-composer
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+    command: install --ignore-platform-reqs
+  phpunit:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tareas_pt-phpunit
+    volumes:
+      - .:/var/www/html
+    working_dir: /var/www/html
+    command: "./vendor/bin/phpunit"
 
 volumes:
-  mariadb_data:
+  db_data:
