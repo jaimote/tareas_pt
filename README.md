@@ -23,7 +23,8 @@ php spark serve
 # bash
 docker compose up -d --build
 # Verifica el servicio en [http://localhost:8080](http://localhost:8080)
-
+# contenedor
+docker exec -it tareas-pt-app /bin/bash
 ## API del controlador de Tareas
 
 Se asume un recurso "Task" con campos básicos:
