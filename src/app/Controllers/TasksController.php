@@ -27,11 +27,12 @@ class TasksController extends BaseController
             ->get()
             ->getResultArray();
 
-        return $this->response->setJSON([
-            'page'  => $page,
-            'count' => count($tasks),
-            'data'  => $tasks,
-        ]);
+        return $this->response->setJSON(
+            //'page'  => $page,
+            //'count' => count($tasks),
+            //'data'  => $tasks,
+            $tasks,
+        );
 
     }
 
@@ -50,7 +51,11 @@ class TasksController extends BaseController
 
     public function create(): ResponseInterface
     {
-        $payload = $this->request->getPost();
+        $payload = $this->request->getJSON(true);
+        if ($payload === null) {
+            $payload = $this->request->getPost();
+        }
+
         $data = [
             'title' => $payload['title'] ?? null,
             'completed' => isset($payload['completed']) ? (bool) $payload['completed'] : false,
@@ -98,7 +103,10 @@ class TasksController extends BaseController
                 ->setJSON(['error' => 'Tarea no encontrada']);
         }
 
-        $payload = $this->request->getRawInput();
+        $payload = $this->request->getJSON(true);
+        if ($payload === null) {
+            $payload = $this->request->getPost();
+        }
 
         if (empty($payload)) {
             return $this->response
