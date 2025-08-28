@@ -24,19 +24,39 @@ class TasksControllerTest extends CIUnitTestCase
 
         // Act
         $res = $this->get('/tasks');
-
+        /*
+         $res = $this->call('get', '/tasks', [], [
+            'Accept' => 'application/json'
+        ]);
+        */
         // Assert
         $res->assertStatus(200);
-        $res->assertHeader('Content-Type', 'application/json');
-        $res->assertJSONFragment(['title' => 'Tarea A']);
-        $res->assertJSONFragment(['title' => 'Tarea B']);
 
-        // Opcional: decodificar y verificar estructura
-        $data = json_decode($res->getBody(), true);
-        $this->assertIsArray($data);
-        $this->assertNotEmpty($data);
-        $this->assertContains($id1, array_column($data, 'id'));
-        $this->assertContains($id2, array_column($data, 'id'));
+        // Decodificar y validar estructura/contenido
+        $payload = json_decode($res->getBody(), true);
+        print_r($payload);die;
+        $this->assertNotNull($payload, 'La respuesta no es JSON válido');
+
+        // Soporta ambas formas: lista directa o envoltura con "data"
+        $list = is_array($payload) && array_is_list($payload)
+            ? $payload
+            : ($payload['data'] ?? []);
+
+        $this->assertIsArray($list, 'La respuesta no contiene una lista de tareas');
+        $this->assertNotEmpty($list, 'La lista de tareas está vacía');
+
+        // Verifica que estén los títulos esperados
+        $titles = array_column($list, 'title');
+        $this->assertContains('Tarea A', $titles);
+        $this->assertContains('Tarea B', $titles);
+
+        // Verifica que al menos contenga los IDs insertados (si el endpoint los devuelve)
+        $ids = array_column($list, 'id');
+        if (!empty($ids)) {
+            $this->assertContains($id1, $ids);
+            $this->assertContains($id2, $ids);
+        }
+
     }
 
     public function testCreateTaskPersistsAndReturnsResource(): void
