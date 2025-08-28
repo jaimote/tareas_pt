@@ -16,7 +16,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Instala la extensión MySQL para MariaDB
-RUN docker-php-ext-install pdo_mysql intl
+RUN docker-php-ext-install pdo_mysql mysqli intl
 
 # Instala Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
