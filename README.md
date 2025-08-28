@@ -86,4 +86,17 @@ La vista `listar_task` es una página HTML que:
 
 Dentro de `listar_task.php`, puedes incluir un esqueleto como este y un script que consume el backend. Ajusta las rutas si tu servidor está en otra URL.
 
+### PHPUnit
+
+3 pruebas representativas con PHPUnit para cubrir el TasksControllerTest
+
+Qué cubre cada prueba
+- Prueba 1: GET /tasks devuelve 200 y la lista de tareas en JSON.
+- Prueba 2: POST /tasks crea una tarea, devuelve 200/201 y la persistencia es verificable.
+- Prueba 3: PATCH/PUT /tasks/{id} actualiza el título y DELETE /tasks/{id} elimina; luego GET /tasks/{id} debe devolver 404.
+
+#bash contenedor phpunit ejecución
+
+vendor/bin/phpunit
+
 
